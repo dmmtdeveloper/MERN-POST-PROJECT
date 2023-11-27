@@ -181,7 +181,7 @@ const Profile = () => {
           onClick={handleDeleteAccount}
           className="text-red-700 cursor-pointer"
         >
-          Detele Acount
+          Detele Account
         </span>
         <span onClick={handleSignOut} className="text-red-700 cursor-pointer">
           Sign out
