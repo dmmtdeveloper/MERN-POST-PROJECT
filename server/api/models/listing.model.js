@@ -4,49 +4,54 @@ const ListingSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      require: true,
+      required: true,
     },
 
     description: {
       type: String,
-      require: true,
+      required: true,
     },
 
-    adress: {
+    address: {
       type: String,
-      require: true,
+      required: true,
     },
 
     price: {
       type: Number,
-      require: true,
+      required: true,
     },
 
     hotel: {
       type: Boolean,
-      require: true,
+      required: true,
     },
 
     restaurant: {
       type: Boolean,
-      require: true,
+      required: true,
     },
 
     touristSpot: {
       type: Boolean,
-      require: true,
+      required: true,
     },
 
     imageUrls: {
       type: Array,
-      require: true,
+      required: true,
+    },
+
+    /*Para saber que usuario creo este listing*/
+    userRef: {
+      type: String,
+      required: true,
     },
   },
 
-  {
-    timestamps: true,
-  }
+  /*save the time creation and update */
+  { timestamps: true }
 );
 
-const Listing = mongoose.model("listing", ListingSchema);
+const Listing = mongoose.model("Listing", ListingSchema);
 export default Listing;

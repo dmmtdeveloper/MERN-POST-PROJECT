@@ -13,10 +13,12 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+// Rutas de la aplicación
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/create", listingRoutes);
+app.use("/api/listing", listingRoutes);
 
+// Middleware para manejo de errores
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
@@ -27,6 +29,7 @@ app.use((err, req, res, next) => {
   });
 });
 
+// Iniciar el servidor
 app.listen(3000, () => {
   console.log("Server started on port 3000");
 });
