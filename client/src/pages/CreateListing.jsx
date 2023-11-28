@@ -7,10 +7,10 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 import { useSelector } from "react-redux";
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 export default function CreateListing() {
   const { currentUser } = useSelector((state) => state.user);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -138,7 +138,7 @@ export default function CreateListing() {
       if (data.success === false) {
         setError(data.message);
       }
-      navigate(`/listing/${data._id}`)
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -177,6 +177,7 @@ export default function CreateListing() {
             required
             value={description}
             onChange={handleChange}
+            autoComplete="description"
           />
 
           <input
@@ -304,7 +305,7 @@ export default function CreateListing() {
             ))}
 
           <button
-           disabled = {loading || uploading}
+            disabled={loading || uploading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           >
             {loading ? "Creating..." : "Create listing"}
