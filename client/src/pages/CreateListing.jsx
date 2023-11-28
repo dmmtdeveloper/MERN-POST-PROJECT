@@ -1,19 +1,39 @@
 import { useState } from "react";
 import {
-  getStorage,
-  uploadBytesResumable,
-  ref,
   getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
-
+import { useSelector } from "react-redux";
+import {useNavigate} from 'react-router-dom'
 export default function CreateListing() {
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate()
   const [files, setFiles] = useState([]);
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [formData, setFormData] = useState({ imageUrls: [] });
   const [imageUploadError, setImageUploadError] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    address: "",
+    price: "",
+    hotel: true,
+    restaurant: true,
+    touristSpot: true,
+    imageUrls: [],
+  });
 
-  /*Verifica si hay archivos para cargar y si la cantidad total de imágenes no excede 6.*/
+  const { name, description, address, price, hotel, restaurant, touristSpot } =
+    formData;
+
+  /*
+  Verifica si hay archivos para cargar y 
+  si la cantidad total de imágenes no excede 6.
+  */
   const handleImageSubmit = () => {
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
       setUploading(true);
@@ -47,7 +67,9 @@ export default function CreateListing() {
     }
   };
 
-  /*Esta función asincrónica 'storageImage' se encarga de cargar una imagen al Firebase Storage.*/
+  /*Esta función asincrónica 'storageImage' 
+  se encarga de cargar una imagen al Firebase Storage.
+  */
   const storageImage = async (file) => {
     return new Promise((resolve, reject) => {
       const storage = getStorage(app);
@@ -76,12 +98,51 @@ export default function CreateListing() {
     });
   };
 
-  /* ----- Eliminar la imagen  ------  */
+  /*Eliminar la imagen*/
   const handleDeleleImage = (index) => {
     setFormData({
       ...formData,
       imageUrls: formData.imageUrls.filter((_, i) => i !== index),
     });
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]:
+        e.target.type === "checkbox" ? e.target.checked : e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (formData.imageUrls.length < 1)
+        return setError("You must upload at least one image");
+      setLoading(true);
+      setError(false);
+      const res = await fetch("/api/listing/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        /* aca nos traemos el id del usuario que esta creano el post */
+        body: JSON.stringify({
+          ...formData,
+          userRef: currentUser._id,
+        }),
+      });
+      const data = await res.json();
+      setLoading(false);
+      if (data.success === false) {
+        setError(data.message);
+      }
+      navigate(`/listing/${data._id}`)
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -90,16 +151,22 @@ export default function CreateListing() {
         Create a listing
       </h1>
 
-      <form className="flex justify-between flex-col sm:flex-row gap-4 p-3">
+      <form
+        onSubmit={handleSubmit}
+        className="flex justify-between flex-col sm:flex-row gap-4 p-3"
+      >
         <div className="flex flex-col gap-4 flex-1">
           <input
-            className="p-3 rounded-lg border "
             type="text"
+            placeholder="Name"
+            className="p-3 rounded-lg border "
+            id="name"
             maxLength="62"
             minLength="10"
-            id="name"
-            placeholder="Name"
             required
+            onChange={handleChange}
+            value={name}
+            autoComplete="name"
           />
 
           <textarea
@@ -108,29 +175,57 @@ export default function CreateListing() {
             id="description"
             placeholder="Description"
             required
+            value={description}
+            onChange={handleChange}
           />
 
           <input
             className="p-3 rounded-lg border "
-            id="address"
             type="text"
+            id="address"
             placeholder="address"
             required
+            value={address}
+            onChange={handleChange}
+            autoComplete="address"
           />
 
           {/* ------ Checkbox ----- */}
 
           <div className="flex gap-6 flex-wrap">
             <div className="flex gap-2 ">
-              <input className="w-4" type="checkbox" id="hotel" />
+              <input
+                type="checkbox"
+                id="hotel"
+                className="w-4"
+                value={hotel}
+                onChange={handleChange}
+                checked={formData.hotel}
+              />
               <span>Hotel</span>
             </div>
+
             <div className="flex gap-2">
-              <input className="w-4" type="checkbox" id="restaurant" />
+              <input
+                className="w-4"
+                type="checkbox"
+                id="restaurant"
+                value={restaurant}
+                onChange={handleChange}
+                checked={formData.restaurant}
+              />
               <span>Restaurant</span>
             </div>
+
             <div className="flex gap-2">
-              <input className="w-4" type="checkbox" id="touristSpot" />
+              <input
+                className="w-4"
+                type="checkbox"
+                id="touristSpot"
+                value={touristSpot}
+                onChange={handleChange}
+                checked={formData.touristSpot}
+              />
               <span>Touris Spot</span>
             </div>
           </div>
@@ -141,9 +236,11 @@ export default function CreateListing() {
             <div className="flex items-center gap-2">
               <input
                 className="p-3 border  rounded-lg"
+                value={price}
                 type="number"
                 id="price"
                 required
+                onChange={handleChange}
               />
               <div className="flex items-center gap-1">
                 <p>Regular price</p>
@@ -163,6 +260,7 @@ export default function CreateListing() {
             </span>
           </p>
           <div className="flex gap-4">
+            {/* ------ Create Image ----- */}
             <input
               className="p-3 border border-gray-300 rounded w-full"
               type="file"
@@ -184,7 +282,6 @@ export default function CreateListing() {
           <p className="text-red-700 text-xs">
             {imageUploadError && imageUploadError}
           </p>
-        
 
           {formData.imageUrls.length > 0 &&
             formData.imageUrls.map((url, index) => (
@@ -207,11 +304,12 @@ export default function CreateListing() {
             ))}
 
           <button
-            type="button"
+           disabled = {loading || uploading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           >
-            Create Listing
+            {loading ? "Creating..." : "Create listing"}
           </button>
+          {error && <p className="text-red-700 text-sm">{error.message}</p>}
         </div>
       </form>
     </main>

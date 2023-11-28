@@ -14,6 +14,7 @@ const Header = () => {
         </Link>
         <form className="bg-slate-100 p-3 rounded-lg flex">
           <input
+            id="search"
             type="text"
             placeholder="Search..."
             className="bg-transparent focus:outline-none items-center w-24 sm:w-64"
