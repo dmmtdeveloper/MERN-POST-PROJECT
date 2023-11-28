@@ -16,7 +16,7 @@ app.use(cookieParser());
 // Rutas de la aplicación
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/listing", listingRoutes);
+app.use("/api/user", listingRoutes);
 
 // Middleware para manejo de errores
 app.use((err, req, res, next) => {
