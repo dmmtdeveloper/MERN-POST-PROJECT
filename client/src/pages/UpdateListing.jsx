@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import {Link} from 'react-router-dom'
 import {
   getDownloadURL,
   getStorage,
@@ -31,7 +32,7 @@ export default function UpdateListing() {
   useEffect(() => {
     const fetchListing = async () => {
       const listingId = params.listingId;
-      const res = await fetch (`/api/listing/get/${listingId}`);
+      const res = await fetch(`/api/listing/get/${listingId}`);
       const data = await res.json();
       setFormData(data);
       if (data.success === false) {
@@ -40,7 +41,7 @@ export default function UpdateListing() {
       setFormData(data);
     };
     fetchListing();
-    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleImageSubmit = () => {
@@ -309,12 +310,15 @@ export default function UpdateListing() {
               </div>
             ))}
 
+
           <button
             disabled={loading || uploading}
             className="p-3 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           >
             {loading ? "Update..." : "Update listing"}
           </button>
+
+
           {error && <p className="text-red-700 text-sm">{error.message}</p>}
         </div>
       </form>
