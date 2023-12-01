@@ -18,7 +18,7 @@ const ListingSchema = new mongoose.Schema(
     },
 
     price: {
-      type: Number,
+      type: Boolean,
       required: true,
     },
 

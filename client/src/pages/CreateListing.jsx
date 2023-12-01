@@ -162,7 +162,7 @@ export default function CreateListing() {
             className="p-3 rounded-lg border "
             id="name"
             maxLength="62"
-            minLength="10"
+            minLength="3"
             required
             onChange={handleChange}
             value={name}
@@ -229,26 +229,23 @@ export default function CreateListing() {
               />
               <span>Touris Spot</span>
             </div>
-          </div>
-
-          {/* ------ Input Text ----- */}
-
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex gap-2">
               <input
-                className="p-3 border  rounded-lg"
+                className="w-4"
                 value={price}
-                type="number"
+                type="checkbox"
                 id="price"
                 required
                 onChange={handleChange}
               />
-              <div className="flex items-center gap-1">
-                <p>Regular price</p>
-                <span className="text-xs">($ USD)</span>
-              </div>
+              <span>Precio</span>
             </div>
           </div>
+          </div>
+
+          {/* ------ Input Text ----- */}
+
         </div>
 
         {/* ------ Create Image ----- */}
